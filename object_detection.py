@@ -35,9 +35,9 @@ def main():
     # Data
     parser.add_argument('-b', default=64, type=int, help='batch size')
     parser.add_argument('-sample_size', default=100000, type=int, help='duration of a sample in µs')
-    parser.add_argument('-T', default=5, type=int, help='simulating time-steps')
-    parser.add_argument('-tbin', default=2, type=int, help='number of micro time bins')
-    parser.add_argument('-image_shape', default=(240,304), type=tuple, help='spatial resolution of events')
+    parser.add_argument('-T', default=12, type=int, help='simulating time-steps')
+    parser.add_argument('-tbin', default=1, type=int, help='number of micro time bins')
+    parser.add_argument('-image_shape', default=(128,128), type=tuple, help='spatial resolution of events')
 
     # Training
     parser.add_argument('-epochs', default=50, type=int, help='number of total epochs to run')

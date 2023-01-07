@@ -20,7 +20,7 @@ class GEN1DetectionDataset(Dataset):
         self.quantized_h = self.h // self.quantization_size[2]
         
         save_file_name = f"gen1_{mode}_{self.sample_size//1000}_{self.quantization_size[0]/1000}ms_{self.tbin}tbin.pt"
-        save_file = os.path.join(args.path, save_file_name)
+        save_file = os.path.join("/datas/sandbox/Gen1Detection", save_file_name)
         
         if os.path.isfile(save_file):
             self.samples = torch.load(save_file)
