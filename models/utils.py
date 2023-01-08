@@ -18,7 +18,7 @@ class SpikingBlock(nn.Module):
 			      stride=stride, padding=0, groups=groups),
 		)
         
-        self.neuron = neuron.MultiStepParametricLIFNode(
+        self.neuron = neuron.MultiStepIFNode(
             init_tau=2.0, v_threshold=1., 
             surrogate_function=surrogate.ATan(),
             detach_reset=True, backend=backend,
@@ -32,7 +32,7 @@ class SpikingBlock(nn.Module):
 
 def get_model(args):
     norm_layer = nn.BatchNorm2d if args.bn else None
-    ms_neuron = neuron.MultiStepParametricLIFNode
+    ms_neuron = neuron.MultiStepIFNode
 
     family, version = args.model.split('-')
     if family == "densenet":

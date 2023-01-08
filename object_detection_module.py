@@ -26,7 +26,7 @@ class DetectionLitModule(pl.LightningModule):
             args.aspect_ratios, args.min_ratio, args.max_ratio)
         
         out_channels = self.backbone.out_channels
-        print(out_channels)
+        # print(out_channels)
         assert len(out_channels) == len(self.anchor_generator.aspect_ratios)
 
         num_anchors = self.anchor_generator.num_anchors_per_location()

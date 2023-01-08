@@ -244,6 +244,10 @@ class MultiStepSpikingDenseNet(SpikingDenseNet):
             fm_trans1 = sequential_forward(self.features[1:6], x_seq)
             fm_trans2 = sequential_forward(self.features[6:8], fm_trans1)
             x_seq = sequential_forward(self.features[8:], fm_trans2)
+            
+            print("xseq", x_seq.shape)
+            print("fmtrans1", fm_trans1.shape)
+            print('fm_trans2', fm_trans2.shape)
             return fm_trans1, fm_trans2, x_seq
 
 def _densenet(
