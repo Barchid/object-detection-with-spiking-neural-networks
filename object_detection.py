@@ -42,7 +42,7 @@ def main():
     parser.add_argument("-tbin", default=1, type=int, help="number of micro time bins")
     parser.add_argument(
         "-image_shape",
-        default=(128,128)#(240, 304),
+        default=(128,128),#(240, 304),
         type=tuple,
         help="spatial resolution of events",
     )
