@@ -124,11 +124,12 @@ def main():
 
     if args.train:
         train_dataset = dataset(args, mode="train")
-        val_dataset = dataset(args, mode="val")    
+        test_dataset = dataset(args, mode="test")
+        # val_dataset = dataset(args, mode="val")    
         train_dataloader = DataLoader(train_dataset, batch_size=args.b, collate_fn=collate_fn, num_workers=args.num_workers, shuffle=True)
-        val_dataloader = DataLoader(val_dataset, batch_size=args.b, collate_fn=collate_fn, num_workers=args.num_workers)
-        
-        trainer.fit(module, train_dataloader, val_dataloader)
+        # val_dataloader = DataLoader(val_dataset, batch_size=args.b, collate_fn=collate_fn, num_workers=args.num_workers)
+        exit()
+        trainer.fit(module, train_dataloader)#, val_dataloader)
     if args.test:
         test_dataset = dataset(args, mode="test")
         test_dataloader = DataLoader(test_dataset, batch_size=args.b, collate_fn=collate_fn, num_workers=args.num_workers)
