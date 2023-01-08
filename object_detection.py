@@ -34,7 +34,7 @@ def main():
     parser.add_argument("-num_classes", default=2, type=int, help="number of classes")
 
     # Data
-    parser.add_argument("-b", default=128, type=int, help="batch size")
+    parser.add_argument("-b", default=64, type=int, help="batch size")
     parser.add_argument(
         "-sample_size", default=100000, type=int, help="duration of a sample in µs"
     )
@@ -42,7 +42,7 @@ def main():
     parser.add_argument("-tbin", default=1, type=int, help="number of micro time bins")
     parser.add_argument(
         "-image_shape",
-        default=(128, 128),
+        default=(240, 304),
         type=tuple,
         help="spatial resolution of events",
     )
