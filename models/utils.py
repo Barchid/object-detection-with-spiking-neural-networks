@@ -19,7 +19,7 @@ class SpikingBlock(nn.Module):
 		)
         
         self.neuron = neuron.MultiStepIFNode(
-            init_tau=2.0, v_threshold=1., 
+            v_threshold=1., 
             surrogate_function=surrogate.ATan(),
             detach_reset=True, backend=backend,
         )
