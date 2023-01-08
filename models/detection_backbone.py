@@ -43,15 +43,15 @@ class DetectionBackbone(nn.Module):
         x = feature_maps[-1]
         detection_feed = [fm.sum(dim=1) for fm in feature_maps]
 
-        for defeed in detection_feed:
-            print("feed", defeed.shape)
+        # for defeed in detection_feed:
+        #     print("feed", defeed.shape)
 
         for block in self.extras:
             x = block(x)
-            print('extra x', x.shape)
+            # print('extra x', x.shape)
             detection_feed.append(x.sum(dim=1))
             
-        for defeed in detection_feed:
-            print("feed", defeed.shape)
+        # for defeed in detection_feed:
+        #     print("feed", defeed.shape)
             
         return detection_feed

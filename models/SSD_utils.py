@@ -56,10 +56,10 @@ class SSDHead(nn.Module):
         self.regression_head = SSDRegressionHead(in_channels, num_anchors)
 
     def forward(self, x: List[Tensor]) -> Dict[str, Tensor]:
-        for i in x:
-            print("iii", i.shape)
+        # for i in x:
+        #     print("iii", i.shape)
         
-        exit()
+        # exit()
         return {
             "bbox_regression": self.regression_head(x),
             "cls_logits": self.classification_head(x),
