@@ -34,11 +34,11 @@ def main():
     parser.add_argument("-num_classes", default=2, type=int, help="number of classes")
 
     # Data
-    parser.add_argument("-b", default=64, type=int, help="batch size")
+    parser.add_argument("-b", default=50, type=int, help="batch size")
     parser.add_argument(
         "-sample_size", default=100000, type=int, help="duration of a sample in µs"
     )
-    parser.add_argument("-T", default=12, type=int, help="simulating time-steps")
+    parser.add_argument("-T", default=6, type=int, help="simulating time-steps")
     parser.add_argument("-tbin", default=1, type=int, help="number of micro time bins")
     parser.add_argument(
         "-image_shape",
@@ -49,7 +49,7 @@ def main():
 
     # Training
     parser.add_argument(
-        "-epochs", default=50, type=int, help="number of total epochs to run"
+        "-epochs", default=15, type=int, help="number of total epochs to run"
     )
     parser.add_argument("-lr", default=1e-3, type=float, help="learning rate used")
     parser.add_argument("-wd", default=1e-4, type=float, help="weight decay used")
