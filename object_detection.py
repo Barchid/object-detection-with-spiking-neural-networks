@@ -195,12 +195,12 @@ def main():
     callbacks.append(ckpt_callback)
 
     trainer = pl.Trainer(
-        gpus=[args.device],
+        gpus=torch.cuda.device_count(),
         gradient_clip_val=1.0,
         max_epochs=args.epochs,
         limit_train_batches=1.0,
         limit_val_batches=1.0,
-        check_val_every_n_epoch=5,
+        # check_val_every_n_epoch=5,
         deterministic=False,
         precision=args.precision,
         callbacks=callbacks,
