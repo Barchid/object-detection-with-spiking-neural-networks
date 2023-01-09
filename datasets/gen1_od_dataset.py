@@ -62,6 +62,8 @@ class GEN1DetectionDataset(Dataset):
 
         sample = (sample > 0).to(torch.float32)
 
+        sample = functional.resize(sample, (self.quantized_h, self.quantized_w), interpolation=InterpolationMode.NEAREST)
+        
         if sample.shape[0] > self.T:
             sample = sample[: self.T, :, :, :]
         elif sample.shape[0] < self.T:
@@ -74,8 +76,6 @@ class GEN1DetectionDataset(Dataset):
                 new_sample[i, :, :, :] = sample[-1, :, :, :]
 
             sample = new_sample
-            
-        sample = functional.resize(sample, (self.quantized_h, self.quantized_w), interpolation=InterpolationMode.NEAREST)
 
         return sample, target
 
