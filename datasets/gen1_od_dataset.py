@@ -140,7 +140,7 @@ class GEN1DetectionDataset(Dataset):
         cnt = 0
         for fil in os.listdir(self.data_dir):
             fil = os.path.join(self.data_dir, fil)
-            if os.path.isfile(fil) and fil.split(".")[-1] == ".pt":
+            if os.path.isfile(fil) and fil.split(".")[-1] == "pt":
                 cnt += 1
 
         return cnt > 0
