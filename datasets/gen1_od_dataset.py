@@ -9,27 +9,6 @@ import numpy as np
 from numpy.lib.recfunctions import structured_to_unstructured
 from prophesee_utils.io.psee_loader import PSEELoader
 
-def animate(spikes: torch.Tensor):
-    fig, ax = plt.subplots()
-    camera = Camera(fig)
-    plt.axis("off")
-
-    for i in range(spikes.shape[0]):
-        spike = spikes[i].numpy()
-        frm = np.full((spike.shape[1], spike.shape[2]), 127, dtype=np.uint8)
-
-        frm[spike[0, :, :] > 0] = 0
-        frm[spike[1, :, :] > 0] = 255
-
-        ax.imshow(frm, cmap="Greys")  # noqa: F841
-        camera.snap()
-
-    anim = camera.animate(interval=50)
-    anim.save("examples/example.gif")
-    plt.close("all")
-    exit()
-    
-
 class GEN1DetectionDataset(Dataset):
     def __init__(self, args, mode="train"):
         self.mode = mode
@@ -40,21 +19,38 @@ class GEN1DetectionDataset(Dataset):
         self.h, self.w = args.image_shape
         self.quantized_w = self.w // self.quantization_size[1]
         self.quantized_h = self.h // self.quantization_size[2]
+        self.data_dir = os.path.join("/datas/sandbox/Gen1Detection", self.mode)
+        # save_file_name = f"gen1_{mode}_{self.sample_size//1000}_{self.quantization_size[0]/1000}ms_{self.tbin}tbin.pt"
+        # save_file = os.path.join("/datas/sandbox/Gen1Detection", save_file_name)
 
-        save_file_name = f"gen1_{mode}_{self.sample_size//1000}_{self.quantization_size[0]/1000}ms_{self.tbin}tbin.pt"
-        save_file = os.path.join("/datas/sandbox/Gen1Detection", save_file_name)
+        # if os.path.isfile(save_file):
+        #     self.samples = torch.load(save_file)
+        #     print("File loaded.")
+        # else:
+        #     data_dir = os.path.join(args.path, mode)
+        #     self.samples = self.build_dataset(data_dir, save_file)
+        #     torch.save(self.samples, save_file)
+        #     print(f"Done! File saved as {save_file}")
 
-        if os.path.isfile(save_file):
-            self.samples = torch.load(save_file)
-            print("File loaded.")
-        else:
+        if not self._check_exists():
             data_dir = os.path.join(args.path, mode)
-            self.samples = self.build_dataset(data_dir, save_file)
-            torch.save(self.samples, save_file)
-            print(f"Done! File saved as {save_file}")
+            self.build_dataset(data_dir, None)
+
+        self._load_dataset()
+
+    def _load_dataset(self):
+        self.files = []
+        for fil in os.listdir(self.data_dir):
+            if fil.split(".")[-1] != ".pt":
+                continue
+            fil = os.path.join(self.data_dir, fil)
+            self.files.append(fil)
 
     def __getitem__(self, index):
-        (coords, feats), target = self.samples[index]
+        fil = self.files[index]
+        sample = torch.load(fil)
+        (coords, feats), target = sample
+        # (coords, feats), target = self.samples[index]
 
         sample = torch.sparse_coo_tensor(
             coords.t(),
@@ -81,7 +77,7 @@ class GEN1DetectionDataset(Dataset):
         return sample, target
 
     def __len__(self):
-        return len(self.samples)
+        return len(self.files)
 
     def build_dataset(self, path, save_file):
         # Remove duplicates (.npy and .dat)
@@ -93,7 +89,9 @@ class GEN1DetectionDataset(Dataset):
 
         print("Building the Dataset")
         pbar = tqdm.tqdm(total=len(files), unit="File", unit_scale=True)
+        titles = []
         samples = []
+        i = 0
         for file_name in files:
             print(f"Processing {file_name}...")
             events_file = file_name + "_td.dat"
@@ -110,19 +108,42 @@ class GEN1DetectionDataset(Dataset):
                 boxes, np.unique(boxes["t"], return_index=True)[1][1:]
             )
 
-            samples.extend(
-                [
-                    sample
-                    for b in boxes_per_ts
-                    if (sample := self.create_sample(video, b)) is not None
-                ]
-            )
+            for b in boxes_per_ts:
+                sample = self.create_sample(video, b)
+                if sample is not None:
+                    samples.append(sample)
+                    titles.append(
+                        os.path.join(self.data_dir, self.mode, str(i).zfill(6))
+                    )
+                    i += 1
+
+            # samples.extend(
+            #     [
+            #         sample
+            #         for b in boxes_per_ts
+            #         if (sample := self.create_sample(video, b)) is not None
+            #     ]
+            # )
             pbar.update(1)
 
         pbar.close()
-        torch.save(samples, save_file)
-        print(f"Done! File saved as {save_file}")
+        print(f"saving samples to {self.data_dir}")
+        for sample, title in zip(samples, titles):
+            torch.save(sample, title + ".pt")
+        print("Done!")
         return samples
+
+    def _check_exists(self):
+        if not os.path.isdir(self.data_dir):
+            return False
+
+        cnt = 0
+        for fil in os.listdir(self.data_dir):
+            fil = os.path.join(self.data_dir, fil)
+            if os.path.isfile(fil) and fil.split(".")[-1] == ".pt":
+                cnt += 1
+
+        return cnt > 0
 
     def create_sample(self, video, boxes):
         ts = boxes["t"][0]
@@ -196,3 +217,38 @@ class GEN1DetectionDataset(Dataset):
         ).to(bool)
 
         return coords.to(torch.int16), feats.to(bool)
+
+
+def animate(spikes: torch.Tensor, targets: torch.Tensor = None):
+    fig, ax = plt.subplots()
+    camera = Camera(fig)
+    plt.axis("off")
+
+    for i in range(spikes.shape[0]):
+        spike = spikes[i].numpy()
+        frm = np.full((spike.shape[1], spike.shape[2]), 127, dtype=np.uint8)
+
+        frm[spike[0, :, :] > 0] = 0
+        frm[spike[1, :, :] > 0] = 255
+
+        boxes = targets["boxes"]
+        for boxe in boxes:
+            x1 = int(boxe[0].item())
+            y1 = int(boxe[1].item())
+            x2 = int(boxe[2].item())
+            y2 = int(boxe[3].item())
+            # up
+            frm[y1 : y1 + 2, x1:x2] = 0
+            # left
+            frm[y1:y2, x1 : x1 + 2] = 0
+            # right
+            frm[y1:y2, x2 : x2 + 2] = 0
+            # bot
+            frm[y2 : y2 + 2, x1:x2] = 0
+
+        ax.imshow(frm, cmap="Greys")  # noqa: F841
+        camera.snap()
+
+    anim = camera.animate(interval=50)
+    anim.save("examples/example.gif")
+    plt.close("all")
