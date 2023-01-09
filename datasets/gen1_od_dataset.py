@@ -4,7 +4,8 @@ from celluloid import Camera
 import matplotlib.pyplot as plt
 import torch
 from torch.utils.data import Dataset
-
+from torchvision.transforms import functional
+from torchvision.transforms import InterpolationMode
 import numpy as np
 from numpy.lib.recfunctions import structured_to_unstructured
 from prophesee_utils.io.psee_loader import PSEELoader
@@ -73,6 +74,8 @@ class GEN1DetectionDataset(Dataset):
                 new_sample[i, :, :, :] = sample[-1, :, :, :]
 
             sample = new_sample
+            
+        sample = functional.resize(sample, (self.quantized_h, self.quantized_w), interpolation=InterpolationMode.NEAREST)
 
         return sample, target
 
