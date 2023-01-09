@@ -41,7 +41,7 @@ class GEN1DetectionDataset(Dataset):
     def _load_dataset(self):
         self.files = []
         for fil in os.listdir(self.data_dir):
-            if fil.split(".")[-1] != ".pt":
+            if fil.split(".")[-1] != "pt":
                 continue
             fil = os.path.join(self.data_dir, fil)
             self.files.append(fil)
