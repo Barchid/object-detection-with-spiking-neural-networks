@@ -113,7 +113,7 @@ class GEN1DetectionDataset(Dataset):
                 if sample is not None:
                     samples.append(sample)
                     titles.append(
-                        os.path.join(self.data_dir, self.mode, str(i).zfill(6))
+                        os.path.join(self.data_dir, str(i).zfill(6))
                     )
                     i += 1
 
