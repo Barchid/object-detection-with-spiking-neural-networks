@@ -186,9 +186,9 @@ def main():
     #     callbacks.append(ckpt_callback)
 
     ckpt_callback = ModelCheckpoint(
-        monitor="val_AP_IoU",
+        monitor="val_AP_IoU=.5:.05:.95",
         dirpath=f"ckpt-od-{args.dataset}-{args.model}/",
-        filename=f"{args.dataset}" + "-{epoch:02d}-{val_AP_IoU:.4f}",
+        filename=f"{args.dataset}" + "-{epoch:02d}",
         save_top_k=1,
         mode="max",
     )
